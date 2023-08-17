@@ -1,27 +1,42 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ChatMessage from './ChatMessage';
+import axios from 'axios';
 
 interface Message {
   role: 'user' | 'assistant';
   content: string;
 }
-const ChatWindow: React.FC = () => {
+const ChatWindow: React.FC<{ characterInfo: { name: string; languageLevel: string; language: string; } }> = ({ characterInfo }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>('');
   const chatEndRef = useRef<HTMLDivElement | null>(null);
 
   const sendMessage = async () => {
     if (userInput.trim() === '') return;
+    let tempMessages = [...messages, { role: 'user', content: userInput }];
 
     setMessages([...messages, { role: 'user', content: userInput }]);
-    setUserInput('');
 
-    // Simulate a response for now
-    setTimeout(() => {
-      setMessages([...messages, { role: 'user', content: userInput }, { role: 'assistant', content: "C'est noté !" }]);
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, 1000);
-  };
+    // Call the Flask API
+    try {
+        const response = await axios.post('http://127.0.0.1:5000/chat', {
+          character_name: characterInfo.name,
+          language: characterInfo.language,
+          lang_level: characterInfo.languageLevel,
+          user_message: userInput
+        });
+
+        const assistantResponse = response.data.message;
+
+        setMessages([...messages, { role: 'user', content: userInput }, { role: 'assistant', content: assistantResponse }]);
+    } catch (error) {
+        console.error("Erreur lors de l'appel à l'API:", error);
+        setMessages([...messages, { role: 'user', content: userInput }, { role: 'assistant', content: "Désolé, je n'ai pas pu traiter votre demande." }]);
+    }
+
+    setUserInput('');
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+};
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
