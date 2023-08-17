@@ -13,7 +13,6 @@ const ChatWindow: React.FC<{ characterInfo: { name: string; languageLevel: strin
 
   const sendMessage = async () => {
     if (userInput.trim() === '') return;
-    let tempMessages = [...messages, { role: 'user', content: userInput }];
 
     setMessages([...messages, { role: 'user', content: userInput }]);
 
@@ -23,7 +22,7 @@ const ChatWindow: React.FC<{ characterInfo: { name: string; languageLevel: strin
           character_name: characterInfo.name,
           language: characterInfo.language,
           lang_level: characterInfo.languageLevel,
-          user_message: userInput
+            user_message: userInput
         });
 
         const assistantResponse = response.data.message;
