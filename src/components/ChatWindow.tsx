@@ -18,7 +18,7 @@ const ChatWindow: React.FC<{ characterInfo: { name: string; languageLevel: strin
 
     // Call the Flask API
     try {
-        const response = await axios.post('http://127.0.0.1:5000/chat', {
+        const response = await axios.post('https://marie1api-fcfe6rea7a-od.a.run.app/chat', {
           character_name: characterInfo.name,
           language: characterInfo.language,
           lang_level: characterInfo.languageLevel,
